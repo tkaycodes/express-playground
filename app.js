@@ -11,7 +11,8 @@ var indexRouter = require('./routes/index');
 
 var app = express();
 
-mongoose.connect('localhost:27017/store');
+mongoose.connect('mongodb://localhost:27017/store', {useNewUrlParser: true});
+
 
 // connect to mongoose
 
