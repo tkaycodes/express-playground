@@ -3,12 +3,18 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var mongoose = require('mongoose');
 
 var expressHbs = require('express-handlebars');
 
 var indexRouter = require('./routes/index');
 
 var app = express();
+
+mongoose.connect('localhost:27017/store');
+
+// connect to mongoose
+
 
 // view engine setup
 // app.set('views', path.join(__dirname, 'views'));
