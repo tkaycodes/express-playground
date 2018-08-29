@@ -8,13 +8,14 @@
 
 				<div class="col-sm-6 col-lg-3 py-2">
 					<div class="card h-100">
-						<img class="card-img-top" src="{{imagePath}}" alt="Card image cap">
+						<img class="card-img-top" src="{{imagePath}}" alt="Card image cap" style="height: 350px;">
 						<div class="card-body">
 							<h5 class="card-title">{{title}}</h5>
 							<p class="card-text">{{description}}</p>
 						</div>
 						<div class="card-footer">
-							<small class="text-muted">{{price}}</small>
+							<small class="text-muted" style="font-size: 22px;font-weight: bold;">${{price}}</small>
+							<button type="button" class="btn btn-success" style="float: right">Add to cart</button>
 						</div>
 					</div>
 				</div>
