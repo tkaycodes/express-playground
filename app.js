@@ -8,11 +8,25 @@ var mongoose = require('mongoose');
 var session = require('express-session')
 const MongoStore = require('connect-mongo')(session);
 
+
+app.use(session({
+  secret: 'mysupersecret',
+  resave: false,
+  saveUnitialized: false,
+  store: new MongoStore({ mongooseConnection: mongoose.connection }),
+  cookie: { maxAge: 180 * 60  * 100 } // 180 min (3 hrs)
+}));
+
 var expressHbs = require('express-handlebars');
 
 var indexRouter = require('./routes/index');
 
 var app = express();
+
+// app.use(function(req, res, next) {
+//   res.locals.session = req.session;
+//   next();
+// });
 
 mongoose.connect('mongodb://localhost:27017/store', {useNewUrlParser: true});
 
