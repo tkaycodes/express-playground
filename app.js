@@ -4,23 +4,10 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var mongoose = require('mongoose');
-
 var session = require('express-session')
 const MongoStore = require('connect-mongo')(session);
-
-
-app.use(session({
-  secret: 'mysupersecret',
-  resave: false,
-  saveUnitialized: false,
-  store: new MongoStore({ mongooseConnection: mongoose.connection }),
-  cookie: { maxAge: 180 * 60  * 100 } // 180 min (3 hrs)
-}));
-
 var expressHbs = require('express-handlebars');
-
 var indexRouter = require('./routes/index');
-
 var app = express();
 
 // app.use(function(req, res, next) {
@@ -28,14 +15,17 @@ var app = express();
 //   next();
 // });
 
+// connect to mongoose
 mongoose.connect('mongodb://localhost:27017/store', {useNewUrlParser: true});
 
+app.use(session({
+  secret: 'mysupersecret',
+  resave: false,
+  saveUninitialized: false,
+  store: new MongoStore({mongooseConnection: mongoose.connection}),
+  cookie: {maxAge: 180 * 60 * 100 } // 180 min (3 hrs)
+}));
 
-// connect to mongoose
-
-
-// view engine setup
-// app.set('views', path.join(__dirname, 'views'));
 app.engine('.hbs', expressHbs( {defaultLayout: 'layout', extname: '.hbs'} ));
 app.set('view engine', '.hbs');
 
@@ -44,7 +34,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
 app.use('/', indexRouter);
 
 // catch 404 and forward to error handler
