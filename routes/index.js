@@ -18,7 +18,15 @@ router.get('/', function(req, res, next) {
     return text;
   }
 
-  var userId = makeid();
+  var userId = '';
+  let isCookieSet = !!req.cookies.optly_user_id;
+
+  if (!isCookieSet) {
+    userId = makeid();
+  }
+  else {
+    userId = req.cookies.optly_user_id;
+  }
 
   axios.get('https://cdn.optimizely.com/datafiles/SLFLfzgmE9m5sZtczLqXnc.json')
     .then(function (response) {
@@ -26,7 +34,6 @@ router.get('/', function(req, res, next) {
       console.log('SUCCESS!!=======')
       var optimizelyClientInstance = optimizely.createInstance({datafile: response.data});
 
-      console.log(userId);
       // Activate an A/B test
       // var variation = optimizelyClientInstance.activate('express-playground', makeid());
       var variation = optimizelyClientInstance.activate('express-playground', userId);
@@ -78,7 +85,7 @@ router.get('/add-to-cart/:id', function(req, res, next) {
     }
     cart.add(product, product.id);
     req.session.cart = cart;
-    // console.log(req.session.cart);
+    console.log(req.session.cart);
     res.redirect('/');
   });
 });
