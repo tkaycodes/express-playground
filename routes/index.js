@@ -23,10 +23,12 @@ router.get('/', function(req, res, next) {
 
   if (!isCookieSet) {
     userId = makeid();
+    res.cookie('optly_user_id', userId);
   }
   else {
     userId = req.cookies.optly_user_id;
   }
+
 
   axios.get('https://cdn.optimizely.com/datafiles/SLFLfzgmE9m5sZtczLqXnc.json')
     .then(function (response) {
