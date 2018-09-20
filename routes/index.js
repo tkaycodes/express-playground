@@ -3,65 +3,25 @@ var router = express.Router();
 var Product = require('../models/product');
 var Cart = require('../models/cart');
 var axios = require('axios');
-var optimizely = require('@optimizely/optimizely-sdk');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
   var totalCartCount = req.session.cart ? req.session.cart.totalQty : 0;
 
-  function makeid() {
-    var text = "";
-    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    for (var i = 0; i < 5; i++)
-      text += possible.charAt(Math.floor(Math.random() * possible.length));
-    return text;
+  const { client } = res.app.get('optimizely');
+  const variation = client.activate('express-playground', req.cookies.optimizely_user);
+
+  if (variation === 'control') {
+    // Execute code for "control" variation
+    console.log("THIS IS CONTROL!!!!!!!!");
+  } else if (variation === 'varA') {
+    // Execute code for "treatment" variation
+    console.log("VAR A !!!!!!!!!");
+  } else if (variation === 'varB') {
+    // Execute code for users who don't qualify for the experiment
+    console.log("VAR B !!!!!!!!!");
   }
-
-  var userId = '';
-  let isCookieSet = !!req.cookies.optly_user_id;
-
-  if (!isCookieSet) {
-    userId = makeid();
-    res.cookie('optly_user_id', userId);
-  }
-  else {
-    userId = req.cookies.optly_user_id;
-  }
-
-
-  axios.get('https://cdn.optimizely.com/datafiles/SLFLfzgmE9m5sZtczLqXnc.json')
-    .then(function (response) {
-
-      console.log('SUCCESS!!=======')
-      var optimizelyClientInstance = optimizely.createInstance({datafile: response.data});
-
-      // Activate an A/B test
-      // var variation = optimizelyClientInstance.activate('express-playground', makeid());
-      var variation = optimizelyClientInstance.activate('express-playground', userId);
-
-      console.log('varitaion is !!');
-      console.log(variation);
-
-      if (variation === 'control') {
-        // Execute code for "control" variation
-        console.log("THIS IS CONTROL!!!!!!!!");
-      } else if (variation === 'varA') {
-        // Execute code for "treatment" variation
-        console.log("VAR A !!!!!!!!!");
-      } else if (variation === 'varB') {
-        // Execute code for users who don't qualify for the experiment
-        console.log("VAR B !!!!!!!!!");
-      }
-
-    })
-    .catch(function (error) {
-
-      console.log('ERROR!!=======')
-      console.log(error);
-      // debugger;
-
-  });
 
   Product.find(function (err, docs) {
 
@@ -72,7 +32,6 @@ router.get('/', function(req, res, next) {
     });
 
   });
-
 
 });
 

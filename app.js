@@ -1,26 +1,29 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var mongoose = require('mongoose');
-var session = require('express-session')
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const mongoose = require('mongoose');
+const session = require('express-session')
 const MongoStore = require('connect-mongo')(session);
-var expressHbs = require('express-handlebars');
-var indexRouter = require('./routes/index');
-var cookieParser = require('cookie-parser');
+const expressHbs = require('express-handlebars');
+const indexRouter = require('./routes/index');
+const utilsRouter = require('./routes/utils/');
+const OptimizelyService = require('./services/optimizely.js');
+const optimizely = new OptimizelyService();
+const app = express();
 
-var app = express();
+app.use(cookieParser());
+app.set('optimizely', optimizely);
 
-// app.use(function(req, res, next) {
-//   res.locals.session = req.session;
-//   next();
-// });
+// Optimizely User MiddleWare
+app.use((req, res, next) => {
+  res.cookie('optimizely_user', req.cookies.optimizely_user || optimizely.generateRandomHash());
+  next();
+});
 
 // connect to mongoose
 mongoose.connect('mongodb://localhost:27017/store', {useNewUrlParser: true});
-app.use(cookieParser())
-
 
 app.use(session({
   secret: 'mysupersecret',
@@ -36,9 +39,9 @@ app.set('view engine', '.hbs');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
+app.use('/utils', utilsRouter);
 
 
 // catch 404 and forward to error handler
