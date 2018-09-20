@@ -9,11 +9,12 @@ router.get('/', function(req, res, next) {
 
   var totalCartCount = req.session.cart ? req.session.cart.totalQty : 0;
 
+  // getter
   const { client } = res.app.get('optimizely');
   const variation = client.activate('express-playground', req.cookies.optimizely_user);
 
   if (variation === 'control') {
-    // Execute code for "control" variation
+    // Execute code for "control" var`iation
     console.log("THIS IS CONTROL!!!!!!!!");
   } else if (variation === 'varA') {
     // Execute code for "treatment" variation

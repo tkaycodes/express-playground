@@ -12,8 +12,13 @@ const utilsRouter = require('./routes/utils/');
 const OptimizelyService = require('./services/optimizely.js');
 const optimizely = new OptimizelyService();
 const app = express();
+const webpack = require('webpack');
+const webpackDevMiddleware = require('webpack-dev-middleware');
+const config = require('./webpack.config.js');
+const compiler = webpack(config);
 
 app.use(cookieParser());
+// setter
 app.set('optimizely', optimizely);
 
 // Optimizely User MiddleWare
@@ -33,6 +38,12 @@ app.use(session({
   cookie: {maxAge: 180 * 60 * 100 } // 180 min (3 hrs)
 }));
 
+// Add webpack
+app.use(webpackDevMiddleware(compiler, {
+  publicPath: config.output.publicPath,
+  stats: { colors: true }
+}));
+
 app.engine('.hbs', expressHbs( {defaultLayout: 'layout', extname: '.hbs'} ));
 app.set('view engine', '.hbs');
 
@@ -40,9 +51,14 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/', indexRouter);
+
+app.use('/api', indexRouter);
 app.use('/utils', utilsRouter);
 
+app.get('*', (req, res) => {
+  const datafile = JSON.stringify(req.app.get('optimizely').datafile);
+  res.render('index.hbs', { datafile });
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
