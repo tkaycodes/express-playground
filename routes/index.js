@@ -4,6 +4,15 @@ var Product = require('../models/product');
 var Cart = require('../models/cart');
 var axios = require('axios');
 
+
+router.get('/products', (req, res) => {
+
+  Product.find(function (err, products) {
+    res.json({ products }).status(200);
+  });
+
+});
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
@@ -47,8 +56,11 @@ router.get('/add-to-cart/:id', function(req, res, next) {
     }
     cart.add(product, product.id);
     req.session.cart = cart;
-    console.log(req.session.cart);
-    res.redirect('/');
+
+    res.json({
+      cart
+    }).status(200);
+
   });
 });
 

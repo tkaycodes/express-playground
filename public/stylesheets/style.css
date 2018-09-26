@@ -10,3 +10,20 @@ body {
 a {
   color: #00B7FF;
 }
+
+.custom-container .card-img-top {
+  height: 350px;
+}
+
+.custom-container .badge-warning {
+  margin-bottom: 5px;
+}
+
+.custom-container .text-muted {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.custom-container .btn-success {
+  float: right;
+}
